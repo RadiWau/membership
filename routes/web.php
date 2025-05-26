@@ -34,6 +34,7 @@ Route::post('bank',  [GeneralController::class, 'getBank'])->name('data.bank');
 Route::get('dashboard',  [DashboardController::class, 'DashboardPage']);
 Route::get('member',  [MemberController::class, 'index']);
 Route::post('topup_gold',  [MemberController::class, 'topupGold'])->name('member.topup');
+Route::get('/referal/{id}',  [RegistrasiController::class, 'regisReferal']);
 Route::get('/profile/{id}',  [UserController::class, 'Profile']);
 Route::post('/profile/check_password',  [UserController::class, 'checkPassword'])->name('profile.action.cek.password');
 Route::post('/profile/action_password',  [UserController::class, 'actionPassword'])->name('profile.action.ganti.password');

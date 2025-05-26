@@ -4,30 +4,45 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\GeneralController;
+use App\Http\Controllers\MemberCardController;
 use App\Http\Controllers\LogsMemberController;
 use App\Models\User;
 use App\Models\MemberPaket;
+use App\Models\MemberSponsor;
 use App\Models\SponsorDetails;
 use App\Models\LogsMember;
 use Mail;
 use App\Mail\EmailInfoRegisMember;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 
 class RegistrasiController extends Controller
 {
+    protected $general, $logsMember;
+
+    public function __construct(
+        GeneralController $general, LogsMemberController $logsMember,
+        MemberCardController $memberCard
+    ){
+        $this->general = $general;
+        $this->logsMember = $logsMember;
+    }
+    
     public function index()
     {
         return view('Auth.register');
     }
 
     public function action_registrasi(Request $request){
-
+        
+        return $this->general->getMemberCard(36);
         // try{
             DB::beginTransaction();
             $validator = Validator::make($request->all(), [
@@ -42,9 +57,10 @@ class RegistrasiController extends Controller
                 'txt_alamat'=>'required|string',
                 'txt_bank'=>'required|string',
                 'txt_atas_nama'=>'required|string',
-                'txt_nomor_rekening'=>'required|unique:users,norek'
+                'txt_nomor_rekening'=>'required'
             ], [
                 'txt_username.required' =>'Username Tidak Boleh Kosong',
+                'txt_username.unique'      =>'Username Sudah Digunakan',
                 'txt_nama.required'     =>'Nama Lengkap Tidak Boleh Kosong',
                 'txt_no_hp.required'    =>'Nomor Hp Tidak Boleh Kosong',
                 'txt_no_hp.unique'      =>'Nomor Hp Sudah Digunakan',
@@ -60,6 +76,7 @@ class RegistrasiController extends Controller
             ]);
 
             if ($validator->fails()){
+                // return $validator->fails();
                 DB::rollback();
                 return redirect()->back()
                     ->withErrors($validator)
@@ -67,8 +84,8 @@ class RegistrasiController extends Controller
                     ->with('regis_gagal', 'Registrasi gagal, Pastikan anda sudah mengisi data dengan benar, Silahkan dicoba kembali');
             }
          
-            $general     = new GeneralController(); 
-            $nominal     = $request->txt_paket == 1 ? $general->paketPrice(1) : $request->txt_nominal;
+            
+            $nominal     = $request->txt_paket == 1 ? $this->general->paketPrice(1) : $request->txt_nominal;
             $trimNominal = str_replace('.', '', $nominal);
             $saldo       = $trimNominal - 10000;
 
@@ -97,8 +114,7 @@ class RegistrasiController extends Controller
             $users->password     = Hash::make("mandali123456");
             $users->save();
             
-            // insert paket
-            
+            // insert paket            
 
             $paket               = new MemberPaket();
             $paket->paket_level  = $request->txt_paket;
@@ -118,21 +134,20 @@ class RegistrasiController extends Controller
                 
             }
             
-            $paket = new GeneralController();
             $dataEmail = array();
             $data['nama']   = $users->nama_lengkap;
-            $data['paket']  = $paket->paketPrice($request->txt_paket);
+            $data['paket']  = $this->general->paketPrice($request->txt_paket);
             
 
-            $logsMember = new LogsMemberController();
+            
             $logsArray = array();
             $logsArray['Member']          = $users->user_id;
             $logsArray['AktifitasiTipe']  = "Registrasi Data <br/>";
-            $logsArray['PaketLevel']      = "Paket : ".$paket->paketLevel($request->txt_paket)." <br/>";
+            $logsArray['PaketLevel']      = "Paket : ".$this->general->paketLevel($request->txt_paket)." <br/>";
             $logsArray['DataProfile']     = $users;
             
             // INSERT LOGS MEMBER
-            $logsMember->Insert($logsArray);
+            $this->logsMember->Insert($logsArray);
             
             DB::commit();
             
@@ -149,6 +164,26 @@ class RegistrasiController extends Controller
         //     return redirect()->back()->with('error', 'Terjadi kesalahan: '.$e->getMessage());
         // }    
             
+    }
+
+    public function regisReferal($referal){
+        try {
+
+            $user = MemberSponsor::LeftJoin('users', 'users.user_id', 'member_sponsor.user_id')
+            ->where('member_sponsor.sponsor_code', $referal)->first();
+            
+            if($user){
+                if($user->status == 2){
+                    return view('auth.register-referal')->with('referal', $referal);
+                }else{
+                    return view('errors.404');
+                }
+            }else{
+                return view('errors.404');
+            }
+        } catch (DecryptException $e) {
+            abort(404, 'Invalid or tampered link.');
+        }
     }
 
     public function TestEmail(){

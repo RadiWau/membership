@@ -13,9 +13,11 @@ use App\Traits\AjaxResponseTrait;
 use Exception;
 use Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class GeneralController extends Controller
 {
@@ -157,44 +159,15 @@ class GeneralController extends Controller
 
     public function encrypt($string){
 
-		$output = false;
-
-		$encrypt_method = "AES-256-CBC";
-		$secret_key = env("APP_KEY");
-		$secret_iv = '!IV@_$2';
-
-		// hash
-		$key = hash('sha256', $secret_key);
-
-		$iv = substr(hash('sha256', $secret_iv), 0, 16);
-
-		$output = openssl_encrypt($string, $encrypt_method, $key, 0, $iv);
-		$output = base64_encode($output);
-
-
-		return $output;
+		
+        $encrypted = encrypt($string);
+		return $encrypted;
 
 	}
 
 	public function decrypt($string){
-
-		$output = false;
-
-		
-		$encrypt_method = "AES-256-CBC";~~
-		$secret_key = env("APP_KEY");
-
-		$secret_iv = '!IV@_$2';
-
-		$key = hash('sha256', $secret_key);
-
-		$iv = substr(hash('sha256', $secret_iv), 0, 16);
-
-		$output = openssl_encrypt($string, $encrypt_method, $key, 0, $iv);
-		$output = openssl_decrypt(base64_decode($string), $encrypt_method, $key, 0, $iv);
-
-		return $output;
-
+		$decrypt = decrypt($string);
+        return $decrypt;
 	}
 
     public function paketLevel($value){

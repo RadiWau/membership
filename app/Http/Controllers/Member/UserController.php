@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Member;
 
 use App\Helper\Logger;
 use App\Http\Controllers\Controller;
-use App\Models\Customers;
 use App\Models\User;
+use App\Models\MemberSponsor;
 use App\Traits\AjaxResponseTrait;
 use Exception;
 use Str;
@@ -29,7 +29,8 @@ class UserController extends Controller
 
     public function profile($id){
         $user = User::where("user_id", $id)->first();
-        return view('Member.profile')->with('data', $user);
+        $memberSponsor = MemberSponsor::where("user_id", $user->user_id)->first();
+        return view('Member.profile')->with('data', $user)->with('sponsor', $memberSponsor);
     }    
     
     public function checkPassword(Request $request){

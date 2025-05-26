@@ -12,8 +12,14 @@
                 <ul class="nav nav-pills flex-column mt-md-0 mt-1">
                     <li class="nav-item">
                         <a class="nav-link d-flex active" id="account-pill-general" data-toggle="pill" href="#account-vertical-general" aria-expanded="true">
-                            <i class="ft-globe mr-50"></i>
-                            General
+                            <i class="ft-user mr-50"></i>
+                            Profil
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex" id="account-pill-connections" data-toggle="pill" href="#account-vertical-connections" aria-expanded="false">
+                            <i class="ft-feather mr-50"></i>
+                            Link Referal
                         </a>
                     </li>
                     <li class="nav-item">
@@ -138,6 +144,16 @@
                                             </div>
                                         </div>
                                     </form>
+                                </div>
+
+                                <div class="tab-pane fade" id="account-vertical-connections" role="tabpanel" aria-labelledby="account-pill-connections" aria-expanded="false">
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <button class=" btn btn-sm btn-info float-right" id="btnLink">Copy Link</button>
+                                            <h6>Link Referal</h6>
+                                            <span id="txtLink"><a href="{{env('APP_URL')}}:8000/referal/{{$sponsor['sponsor_code']}}">{{env('APP_URL')}}:8000/referal/{{$sponsor['sponsor_code']}}</a></span>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="tab-pane fade" id="account-vertical-password" role="tabpanel" aria-labelledby="account-pill-password" aria-expanded="false">
@@ -361,6 +377,15 @@
                 // $('#txt_kecamatan').empty();
                 // $('#txt_kelurahan').empty();
                 // getKabupaten(prov_id);
+            });
+
+            $('#btnLink').click(function() {
+                const text = $('#txtLink').text(); // Get span text
+                const $temp = $('<input>'); // Create temporary input
+                $('body').append($temp);
+                $temp.val(text).select(); // Set value and select it
+                document.execCommand('copy'); // Copy to clipboard
+                $temp.remove(); // Clean up
             });
 
            

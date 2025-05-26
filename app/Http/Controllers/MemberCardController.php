@@ -19,12 +19,12 @@ class MemberCardController extends Controller
     use AjaxResponseTrait;
 
     public function __construct(){
-        $this->middleware('auth.admin');
+        // $this->middleware('auth.admin');
     }
     
     // GENERATE SPONSOR CODE
     public function generateMemberCard($user_id){
-        // try {
+        try {
 
             $memberCard = MemberCard::orderBy('sequence_no', 'DESC')->first(); // check if null
             $user = User::find($user_id);
@@ -57,8 +57,15 @@ class MemberCardController extends Controller
             }
 
             return $insertCard;
-            
-        // 
+        }
+        catch (Exception $e) {
+
+            return $status = "Not Found";
+        }
+    }
+
+    public function getMemberCard($id){
+        return $id;
     }
 
     public function getStatusAkunAdmin($value){
