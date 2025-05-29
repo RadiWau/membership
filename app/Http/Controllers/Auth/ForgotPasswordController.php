@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\GeneralController;
+use App\Http\Controllers\StatusController;
 use App\Models\User;
 use App\Models\MemberPaket;
 use App\Models\Logs;
@@ -18,28 +19,18 @@ class ForgotPasswordController extends Controller
 {
     public function index()
     {
-        return view('Auth.forgot-password');
+        return view('auth.forgot-password');
     }
 
-    public function formForgotPassword($code)
-    {
-        $verify_code = User::where('verify_code', $code)->first();
-        if($verify_code){
-            return view('Auth.form-forgot-password');
-        }
-
-        return view('errors.404'); 
-    }
-
-    public function actionForget(Request $request){
+    public function actionFormCekUsername(Request $request){
         
         try{
-
+            
             DB::beginTransaction();
             $validator = Validator::make($request->all(), [
-                'txt_email'=>'required'
+                'txt_username'=>'required'
             ], [
-                'txt_email.required'     =>'Email Tidak Boleh Kosong'
+                'txt_username.required'     =>'Username Tidak Boleh Kosong'
             ]);
 
             if ($validator->fails()){
@@ -48,16 +39,19 @@ class ForgotPasswordController extends Controller
                     ->withErrors($validator)
                     ->withInput();
             }
-
-            $user = User::where('email', $request->txt_email)->first();
-            if($user){
-
-                return redirect()->route('auth.forgot')->with('regis_success', 'Silahkan cek email anda untuk proses lupa kata sandi');
-                
+            $status = new StatusController();
+            $user   = User::where('username', $request->txt_username)->first();
+            
+            if(!$user){
+                return redirect()->route('auth.forgot')->with('cek_failed', 'Username Tidak Ditemukan');
             }
 
-            DB::commit();
-            return redirect()->route('auth.forgot')->with('regis_failed', 'Email Tidak Ditemukan');
+            if($user->status !== 2){
+                return redirect()->route('auth.forgot')->with('cek_failed', 'Status Member '.$user->nama_lengkap.' '.$status->getStatusAkun($user->status).', Silahkan hubungi administrator  ');
+            }
+
+            return view('auth.form-password')->with('username_value', $user->username);
+
 
         }catch (\Exception $e) {
             DB::rollback();
@@ -66,18 +60,16 @@ class ForgotPasswordController extends Controller
             
     }
 
-    public function actionFormForgetPassword(Request $request){
-        
+    public function actionForgotPassword(Request $request){
         try{
-            
-            $code = "67117df1e2ca460c52084ca261aa85e8";
+
             DB::beginTransaction();
             $validator = Validator::make($request->all(), [
                 'txt_sandi'=>'required',
                 'txt_sandi_ulangi'=>'required'
             ], [
-                'txt_sandi.required'     =>'Sandil Tidak Boleh Kosong',
-                'txt_sandi_ulangi.required'     =>'Sandi Tidak Boleh Kosong',
+                'txt_sandi.required'         =>'Kata Sandi Tidak Boleh Kosong',
+                'txt_sandi_ulangi.required'  =>'Kata Sandi Tidak Boleh Kosong'
             ]);
 
             if ($validator->fails()){
@@ -87,21 +79,17 @@ class ForgotPasswordController extends Controller
                     ->withInput();
             }
 
-            if($request->txt_sandi !== $request->txt_sandi_ulangi){
-                return redirect()->route('auth.form-forgot')->with('forgot_failed', 'Pastikan Kata Sandi & Ulangi Kata Sandi Sudah Sama');
+            $user = User::where('username', $request->username)->first();
+            if(!$user){
+                return redirect()->route('auth.forgot')->with('cek_failed', 'Username Tidak Ditemukan');
             }
 
-            $user = User::find('5202d1bb-f081-4f79-b3f8-812c2e4c6342');
-            if($user){
-                $user->verify_code = "";
-                $user->update();
-            }
-            else {
-                return redirect()->to('form-forgot-password/'.$code)->with('forgot_failed', 'User Tidak Ditemukan, Silahkan Hubungi Administrator');
-            }
+            $user = User::where('username', $request->username)->update([
+                'password'=>Hash::make($request->txt_sandi)
+            ]);
 
             DB::commit();
-            return view('Auth.forgot-password-success')->with('forgot_success', 'Success BRO');
+            return redirect()->route('login')->with('login_success', 'Kata Sandi Berhasil di Perbarui');
 
         }catch (\Exception $e) {
             DB::rollback();

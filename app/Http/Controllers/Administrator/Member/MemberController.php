@@ -133,9 +133,9 @@ class MemberController extends Controller
             }
 
             $general                = new GeneralController();
-            $generateMemberCard     = new MemberCardController();
+            // $generateMemberCard     = new MemberCardController();
             $generateSponsore       = new SponsorCodeController();
-            $memberCard             = $generateMemberCard->generateMemberCard($user->user_id);
+            // $memberCard             = $generateMemberCard->generateMemberCard($user->user_id);
             $memberSponsor          = $generateSponsore->generateSponsorCode($user->user_id);
             
             // upload file topup
@@ -196,5 +196,86 @@ class MemberController extends Controller
     public function showTopUp($user, $paket){
         $file = new FileController();
         return $file->ReadAttachmentTopUp($user, $paket);
+    }
+
+    public function actionGantiPassword(Request $request){
+        try {
+
+            DB::beginTransaction();
+
+            $member = User::find($requst->user_id);
+
+            if ($user) {
+
+                $password   = Hash::make($request->txt_sandi);
+                $update     = User::where('user_id', $user->user_id)->update(['password'=>$password]);
+                DB::commit();
+
+                return redirect()->to('admin/member/detil_member/'.$user->user_id)->with('w', 'Kata Sandi Berhasil Dirubah');
+            }
+
+            DB::rollback();
+            return redirect()->to('admin/member/')->with('user_gagal', 'Memeber Tidak Ditemukan');
+            
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Terjadi kesalahan: '.$e->getMessage());
+       
+        }
+    }
+
+    public function actionMemberCard(Request $request){
+        try {
+
+            DB::beginTransaction();
+
+            $validator = Validator::make($request->all(), [
+                'txt_member_card'=>'required|unique:member_card,member_card_no'
+            ], [
+                'txt_member_card.required' =>'Nomor Kartu Tidak Boleh Kosong',
+                'txt_username.unique'      =>'Nomor Kartu Sudah Digunakan'
+            ]);
+
+            if ($validator->fails()){
+                DB::rollback();
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput()
+                    ->with('topup_gagal', "Nomor Kartu Tidak Boleh Kosong atau Nomor Kartu Sudah Digunakan");
+            }
+
+            $user = User::find($request->user_id);
+
+            if ($user) {
+                
+                $memberCard = MemberCard::where('user_id', $user->user_id)->first();
+
+                if($memberCard){
+
+                    $updateCard = MemberCard::where('user_id', $user->user_id)->update([
+                        'member_card_no' => $request->txt_member_card, 'updated_at'=>now()
+                    ]);
+                }
+
+                $insertCard                 = new MemberCard;
+                $insertCard->user_id        = $user ->user_id;
+                $insertCard->member_card_no = $request->txt_member_card;
+                $insertCard->status         = 1;
+                $insertCard->created_at     = now();
+                $insertCard->created_by     = Auth::guard('admin')->user()->admin_id;;
+                $insertCard->save();
+                
+                DB::commit();
+                return redirect()->to('admin/member/detil_member/'.$user->user_id)->with('user_success', 'Nomor Kartu Berhasil Dsimpan');
+            }
+
+            DB::rollback();
+            return redirect()->to('admin/member/')->with('user_gagal', 'Memeber Tidak Ditemukan');
+            
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Terjadi kesalahan: '.$e->getMessage());
+       
+        }
     }
 }

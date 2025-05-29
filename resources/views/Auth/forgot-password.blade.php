@@ -9,16 +9,16 @@
 @endsection 
 
 @section('content')
-<form class="form p-3 pb-0" style="margin-top: -20px" method="post" action="{{route('auth.action.forgot.password')}}">
-    @if(Session::has('regis_success'))
+<form class="form p-3 pb-0" style="margin-top: -20px" method="post" action="{{route('auth.action.form.cek.member')}}">
+    @if(Session::has('cek_success'))
         <div class="alert alert-success alert-dismissable fade show" role="alert">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-            {{ Session::get('regis_success') }}
+            {{ Session::get('cek_success') }}
         </div>
-    @elseif(Session::has('regis_failed'))
+    @elseif(Session::has('cek_failed'))
         <div class="alert alert-danger alert-dismissable fade show" role="alert">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-            {{ Session::get('regis_failed') }}
+            {{ Session::get('cek_failed') }}
         </div>
     @endif
     
@@ -26,8 +26,8 @@
     <div class="row ">
         <div class="col-12">
             <div class="form-group">
-                <label for="projectinput1" class="text-left float-left">Email</label>
-                <input type="text" id="txt_email" name="txt_email" class="form-control input-rounded" placeholder="Masukkan email anda" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" >
+                <label for="txt_username" class="text-left float-left">Username</label>
+                <input type="text" id="txt_username" name="txt_username" class="form-control input-rounded" placeholder="Masukkan username anda" value="{{ old('txt_username') }}" required>
             </div>
         </div>
     </div>

@@ -17,10 +17,8 @@ Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])->name
 Route::get('/form-forgot-password/{code}', [ForgotPasswordController::class, 'formForgotPassword'])->name('auth.form-forgot');
 Route::post('action/login', [LoginController::class, 'actionLogin'])->name('auth.action.login');
 Route::post('action/register', [RegistrasiController::class, 'action_registrasi'])->name('auth.action.register');
-Route::post('action/forgot', [ForgotPasswordController::class, 'actionForget'])->name('auth.action.forgot.password');
-Route::post('action/form-forgot-password', [ForgotPasswordController::class, 'actionFormForgetPassword'])->name('auth.action.form.forgot.password');
-
-Route::get('/testEmail', [RegistrasiController::class, 'TestEmail']);
+Route::post('action/form-cek-member', [ForgotPasswordController::class, 'actionFormCekUsername'])->name('auth.action.form.cek.member');
+Route::post('action/forgot-password', [ForgotPasswordController::class, 'actionForgotPassword'])->name('auth.action.forgot.password');
 
 
 // GENERAL AKSES

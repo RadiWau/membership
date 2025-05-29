@@ -14,6 +14,13 @@
                 {!! Session::get('topup_gagal') !!}
             </div>
         @endif
+        @if(Session::has('user_success'))
+            <div class="alert alert-success alert-dismissable fade show" role="alert">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+                {!! Session::get('user_success') !!}
+            </div>
+        @endif
+
     </div>
 </div>
 <div class="row">
@@ -32,7 +39,7 @@
                             <span>Nomor Kartu : </span>
                             <span class="users-view-id">
                                 @if(isset($card))
-                                    {{\Carbon\Carbon::parse($card['date_created'])->format('ym')}} - {{\Carbon\Carbon::parse($card['date_expired'])->format('ym')}} - {{str_pad ($card['sequence_no'], 8, '0', STR_PAD_LEFT)}}
+                                    {{$card['member_card_no']}}
                                 @else
                                     - 
                                 @endif
@@ -99,7 +106,24 @@
                                                 @else
                                                     <span class="badge badge-warning users-view-status">{{$profile_status}}</span>
                                                 @endif
-                                                
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Nomor Kartu </td>
+                                            <td>:</td>
+                                            <td width="30%">
+                                                <button type="button" class="btn btn-info" {{ $profile['status'] == 2 ? "" : "disabled" }} data-toggle="modal" data-target="#InputMemberCard">
+                                                    <span style="letter-spacing: 2px;">Lihat</span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Ganti Password </td>
+                                            <td>:</td>
+                                            <td width="30%">
+                                                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#inputPassword">
+                                                    <span style="letter-spacing: 2px;">Ganti</span>
+                                                </button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -164,7 +188,8 @@
                         <div class="card-content">
                             <div class="row">
                                 <div class="col-12">
-                                    <div class="table-responsive my-2">
+                                    COMMING SOON
+                                    <!-- <div class="table-responsive my-2">
                                         <table class="table table-striped table-bordered" id="tbl_member">
                                             <thead>
                                                 <tr>
@@ -195,9 +220,9 @@
                                                 </tr>
                                             </tbody>
                                         </table>
-                                    </div>
-                                </div >
-                            </div >
+                                    </div> -->
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -267,6 +292,78 @@
                                 <button type="submit" id="save_gold" class="btn btn-primary">Simpan</button>
                                 <button id="cancel_modal" onclick="closeModal()" data-dismiss="modal" class="btn btn-info">Batal</button>
                             </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal animated fade text-left" id="InputMemberCard" style="border-radius: 15px !important;" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="border-radius: 15px !important;" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-white pb-0 border-0">
+                <h4 class="modal-title text-primary font-weight-bold" id="modal_title">Input Nomor Kartu</h4>
+                <button type="button" onclick="closeModal()" class="close text-dark" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{{route('member.action.member.card')}}" method="post">
+                    <div class="row">
+                        @csrf
+                        <div class="col-12">
+                            <div class="form-group">
+                                <input type="hidden" id="user_id" name="user_id" value="{{$profile->user_id}}">
+                                <label for="txt_member_card" class="text-left float-left">Kata Sandi</label>
+                                <input type="text" id="txt_member_card" name="txt_member_card" class="form-control input-rounded" placeholder="Masukkan Nomor Kartu" value="{{ old('txt_member_card') }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mt-1 text-right">
+                            <div class="form-group">                            
+                                <button type="submit" id="save_silver" class="btn btn-primary">Simpan</button>
+                                <button id="cancel_modal" onclick="closeModal()" data-dismiss="modal" class="btn btn-info">Batal</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal animated fade text-left" id="inputPassword" style="border-radius: 15px !important;" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="border-radius: 15px !important;" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-white pb-0 border-0">
+                <h4 class="modal-title text-primary font-weight-bold" id="modal_title">Ganti Kata Sandi</h4>
+                <button type="button" onclick="closeModal()" class="close text-dark" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{{route('member.action.ganti.password')}}" method="post">
+                    @csrf
+                    <div class="row ">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <input type="hidden" id="user_id" name="user_id" value="{{$profile->user_id}}">
+                                <label for="txt_sandi" class="text-left float-left">Kata Sandi</label>
+                                <input type="text" id="txt_sandi" name="txt_sandi" class="form-control input-rounded" placeholder="Masukkan kata sandi" required>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="txt_sandi_ulangi" class="text-left float-left">Ulangi Kata Sandi</label>
+                                <input type="text" id="txt_sandi_ulangi" name="txt_sandi_ulangi" class="form-control input-rounded" placeholder="Masukkan kata sandi" required>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="col-md-12 mt-1 text-right">
+                        <div class="form-group">                            
+                            <button type="submit" id="save_silver" class="btn btn-primary">Ganti</button>
+                            <button id="cancel_modal" onclick="closeModal()" data-dismiss="modal" class="btn btn-info">Batal</button>
                         </div>
                     </div>
                 </form>

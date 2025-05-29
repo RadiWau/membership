@@ -32,7 +32,9 @@ Route::prefix('admin')->group(function () {
         Route::get('/detil_member/{member}', [MemberController::class, 'detilMember'])->name('member.detil');
         Route::get('/lihat_topup/{user}/{paket}/', [MemberController::class, 'showTopUp'])->name('member.view.topup');
         
-        Route::post('/action_validate_topup', [MemberController::class, 'ActionTopup'])->name('member.action.toptup');
+        Route::post('/action_validate_topup', [MemberController::class, 'actionTopup'])->name('member.action.toptup');
+        Route::post('/action_input_memeber_card', [MemberController::class, 'actionMemberCard'])->name('member.action.member.card');
+        Route::post('/action_ganti_password', [MemberController::class, 'actionGantiPassword'])->name('member.action.ganti.password');
         Route::post('/list_member', [MemberController::class, 'showAll'])->name('member.list');
         
     });

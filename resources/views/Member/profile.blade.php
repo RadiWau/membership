@@ -151,7 +151,7 @@
                                         <div class="col-12 mb-3">
                                             <button class=" btn btn-sm btn-info float-right" id="btnLink">Copy Link</button>
                                             <h6>Link Referal</h6>
-                                            <span id="txtLink"><a href="{{env('APP_URL')}}:8000/referal/{{$sponsor['sponsor_code']}}">{{env('APP_URL')}}:8000/referal/{{$sponsor['sponsor_code']}}</a></span>
+                                            <span id="txtLink"><a href="{{env('APP_URL')}}/referal/{{$sponsor['sponsor_code']}}">{{env('APP_URL')}}:8000/referal/{{$sponsor['sponsor_code']}}</a></span>
                                         </div>
                                     </div>
                                 </div>

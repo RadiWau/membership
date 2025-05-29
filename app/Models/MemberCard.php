@@ -12,9 +12,7 @@ class MemberCard extends Model
     protected $primaryKey = 'member_id';
     protected $fillable = [
         'user_id',
-        'date_create',
-        'datte_expired',
-        'sequence_no',
+        'member_card_no',
         'status',
         'created_at',
         'created_by'

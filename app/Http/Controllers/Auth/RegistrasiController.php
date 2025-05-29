@@ -42,8 +42,7 @@ class RegistrasiController extends Controller
 
     public function action_registrasi(Request $request){
         
-        return $this->general->getMemberCard(36);
-        // try{
+        try{
             DB::beginTransaction();
             $validator = Validator::make($request->all(), [
                 'txt_username'=>'required|unique:users,username',
@@ -159,10 +158,10 @@ class RegistrasiController extends Controller
             dan bukti topup informasikan ke admin.
             ');
 
-        // }catch (\Exception $e) {
-        //     DB::rollback();
-        //     return redirect()->back()->with('error', 'Terjadi kesalahan: '.$e->getMessage());
-        // }    
+        }catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Terjadi kesalahan: '.$e->getMessage());
+        }    
             
     }
 

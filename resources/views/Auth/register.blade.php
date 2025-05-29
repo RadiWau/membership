@@ -162,7 +162,7 @@
 @endsection
 
 @section('text-footer')
-    <p class="text-center"><a href="/" class="card-link">Sudah Punya Akun</a> <a href="/forget-password" class="card-link">Lupa Kata Sandi</a></p>
+    <p class="text-center"><a href="/" class="card-link">Sudah Punya Akun</a> <a href="/forgot-password" class="card-link">Lupa Kata Sandi</a></p>
 @endsection  
 
 

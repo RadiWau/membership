@@ -83,7 +83,8 @@
                     <div id="logAktifitas" role="tabpanel" data-parent="#logAktifitas" aria-labelledby="heading31" class=" collapse show" aria-expanded="true">
                         <div class="card-content">
                             <div class="card-body p-0">
-                                <div class="table-responsive">
+                                COMING SOON
+                                <!-- <div class="table-responsive">
                                     <table class="table table-striped table-bordered" id="tbl_aktifitas" width="100%">
                                         <thead>
                                             <tr>
@@ -104,7 +105,7 @@
                                             </tr>
                                         </tbody>
                                     </table>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>

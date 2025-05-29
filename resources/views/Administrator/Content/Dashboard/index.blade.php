@@ -61,7 +61,8 @@
                 <div class="card-content">
                     <div class="row">
                         <div class="col-12">
-                            <div class="table-responsive my-2">
+                            COMING SOON
+                            <!-- <div class="table-responsive my-2">
                                 <table class="table table-striped table-bordered" id="tbl_member">
                                     <thead>
                                         <tr>
@@ -89,7 +90,7 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
+                            </div> -->
                         </div >
                     </div >
                 </div>

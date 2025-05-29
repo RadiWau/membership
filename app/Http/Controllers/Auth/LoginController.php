@@ -15,7 +15,7 @@ class LoginController extends Controller
 {
     public function index()
     {
-        return view('Auth.login');
+        return view('auth.login');
     }
 
     public function actionLogin(Request $request){
@@ -69,7 +69,7 @@ class LoginController extends Controller
                         return redirect()->to('/dashboard');
                     }
                     else{
-                        return redirect('/')->with('login_failed', 'Kata Sandi Anda Salah, Silahkan Dicoba Kembali');
+                        return redirect('/')->with('login_gagal', 'Kata Sandi Anda Salah, Silahkan Dicoba Kembali');
                     }
 
                 }
@@ -83,9 +83,6 @@ class LoginController extends Controller
             return redirect()->back()->with('login_gagal', 'Terjadi kesalahan: '.$e->getMessage());
         }    
     }
-
-
-
 
     public function actionLogout(Request $request){
         

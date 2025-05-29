@@ -20,6 +20,11 @@
             <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
             {{ Session::get('login_info') }}
         </div>
+    @elseif(Session::has('login_success'))
+        <div class="alert alert-success alert-dismissable fade show" role="alert">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+            {{ Session::get('login_success') }}
+        </div>
     @endif
     
     @csrf
@@ -49,6 +54,6 @@
 
 @section('text-footer')
     <p class="text-center">
-        <a href="/register" class="card-link">Daftar Akun</a> <a href="/forget-password" class="card-link">Lupa Kata Sandi</a> 
+        <a href="/register" class="card-link">Daftar Akun</a> <a href="/forgot-password" class="card-link">Lupa Kata Sandi</a> 
     </p>
 @endsection  
